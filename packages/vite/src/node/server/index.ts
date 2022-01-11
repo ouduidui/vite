@@ -297,9 +297,11 @@ export interface ViteDevServer {
   _pendingRequests: Map<string, Promise<TransformResult | null>>
 }
 
+// 创建服务
 export async function createServer(
   inlineConfig: InlineConfig = {}
 ): Promise<ViteDevServer> {
+  // 解析命令行选项 config
   const config = await resolveConfig(inlineConfig, 'serve', 'development')
   const root = config.root
   const serverConfig = config.server
@@ -313,12 +315,15 @@ export async function createServer(
   }
 
   const middlewares = connect() as Connect.Server
+  // 创建http服务
   const httpServer = middlewareMode
     ? null
     : await resolveHttpServer(serverConfig, middlewares, httpsOptions)
+  // 创建socket服务
   const ws = createWebSocketServer(httpServer, config, httpsOptions)
 
   const { ignored = [], ...watchOptions } = serverConfig.watch || {}
+  // 监听文件变动
   const watcher = chokidar.watch(path.resolve(root), {
     ignored: [
       '**/node_modules/**',
@@ -335,6 +340,8 @@ export async function createServer(
     container.resolveId(url, undefined, { ssr })
   )
 
+  // plugin插件
+  // vue的话默认引入 @vitejs/plugin-vue
   const container = await createPluginContainer(config, moduleGraph, watcher)
   const closeHttpServer = createServerCloseFn(httpServer)
 
@@ -376,6 +383,7 @@ export async function createServer(
         rebindErrorStacktrace(e, stacktrace)
       }
     },
+    // 监听动作
     listen(port?: number, isRestart?: boolean) {
       return startServer(server, port, isRestart)
     },
@@ -393,6 +401,7 @@ export async function createServer(
         closeHttpServer()
       ])
     },
+    // 打印 url
     printUrls() {
       if (httpServer) {
         printCommonServerUrls(httpServer, config.server, config)
@@ -447,6 +456,7 @@ export async function createServer(
     return setPackageData(id, pkg)
   }
 
+  // 监听变化
   watcher.on('change', async (file) => {
     file = normalizePath(file)
     if (file.endsWith('/package.json')) {
@@ -456,6 +466,7 @@ export async function createServer(
     moduleGraph.onFileChange(file)
     if (serverConfig.hmr !== false) {
       try {
+        // 触发热更新
         await handleHMRUpdate(file, server)
       } catch (err) {
         ws.send({
@@ -466,6 +477,7 @@ export async function createServer(
     }
   })
 
+  // 监听文件增加
   watcher.on('add', (file) => {
     handleFileAddUnlink(normalizePath(file), server)
   })
@@ -600,6 +612,7 @@ export async function createServer(
   return server
 }
 
+// 开启http服务
 async function startServer(
   server: ViteDevServer,
   inlinePort?: number,
@@ -612,12 +625,14 @@ async function startServer(
 
   const options = server.config.server
   const port = inlinePort || options.port || 3000
+  // 解析站点
   const hostname = resolveHostname(options.host)
 
   const protocol = options.https ? 'https' : 'http'
   const info = server.config.logger.info
   const base = server.config.base
 
+  // 开启服务
   const serverPort = await httpServerStart(httpServer, {
     port,
     strictPort: options.strictPort,

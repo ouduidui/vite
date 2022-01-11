@@ -580,6 +580,7 @@ export interface Hostname {
   name: string
 }
 
+// 解析站点
 export function resolveHostname(
   optionsHost: string | boolean | undefined
 ): Hostname {

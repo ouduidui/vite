@@ -77,22 +77,25 @@ cli
   .action(async (root: string, options: ServerOptions & GlobalCLIOptions) => {
     // output structure is preserved even after bundling so require()
     // is ok here
+    // 按需引入
     const { createServer } = await import('./server')
     try {
+      // 创建服务
       const server = await createServer({
         root,
         base: options.base,
         mode: options.mode,
-        configFile: options.config,
+        configFile: options.config, // 配置文件
         logLevel: options.logLevel,
         clearScreen: options.clearScreen,
-        server: cleanOptions(options)
+        server: cleanOptions(options) // 服务配置
       })
 
       if (!server.httpServer) {
         throw new Error('HTTP server not available')
       }
 
+      // 监听端口
       await server.listen()
 
       const info = server.config.logger.info
@@ -105,6 +108,7 @@ cli
         }
       )
 
+      // 打印url
       server.printUrls()
 
       // @ts-ignore
@@ -259,4 +263,5 @@ cli
 cli.help()
 cli.version(require('../../package.json').version)
 
+// 解析cli
 cli.parse()

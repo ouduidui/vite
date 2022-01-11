@@ -38,6 +38,7 @@ if (debugIndex > 0) {
   }
 }
 
+// 启动函数
 function start() {
   require('../dist/node/cli')
 }
@@ -55,5 +56,6 @@ if (profileIndex > 0) {
     session.post('Profiler.start', start)
   })
 } else {
+  // 调用启动函数
   start()
 }

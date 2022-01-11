@@ -38,6 +38,7 @@ function getShortName(file: string, root: string) {
   return file.startsWith(root + '/') ? path.posix.relative(root, file) : file
 }
 
+// 热更新
 export async function handleHMRUpdate(
   file: string,
   server: ViteDevServer
@@ -52,6 +53,7 @@ export async function handleHMRUpdate(
   const isEnv =
     config.inlineConfig.envFile !== false &&
     (file === '.env' || file.startsWith('.env.'))
+  // 如果是修改配置文件，重启服务
   if (isConfig || isConfigDependency || isEnv) {
     // auto restart server
     debugHmr(`[config change] ${colors.dim(shortFile)}`)
@@ -62,6 +64,7 @@ export async function handleHMRUpdate(
       { clear: true, timestamp: true }
     )
     try {
+      // 重启
       await server.restart()
     } catch (e) {
       config.logger.error(colors.red(e))
@@ -121,6 +124,7 @@ export async function handleHMRUpdate(
     return
   }
 
+  // 更新模块
   updateModules(shortFile, hmrContext.modules, timestamp, server)
 }
 

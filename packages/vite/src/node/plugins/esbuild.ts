@@ -51,6 +51,7 @@ type TSConfigJSON = {
 }
 type TSCompilerOptions = NonNullable<TSConfigJSON['compilerOptions']>
 
+// 使用esbuild预编译
 export async function transformWithEsbuild(
   code: string,
   filename: string,
@@ -129,6 +130,7 @@ export async function transformWithEsbuild(
   delete resolvedOptions.jsxInject
 
   try {
+    // 核心 编译
     const result = await transform(code, resolvedOptions)
     let map: SourceMap
     if (inMap && resolvedOptions.sourcemap) {

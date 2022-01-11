@@ -66,6 +66,7 @@ export interface ResolvedOptions extends Options {
   devServer?: ViteDevServer
 }
 
+// 核心函数
 export default function vuePlugin(rawOptions: Options = {}): Plugin {
   const {
     include = /\.vue$/,
@@ -111,6 +112,7 @@ export default function vuePlugin(rawOptions: Options = {}): Plugin {
   return {
     name: 'vite:vue',
 
+    // 处理热更新
     handleHotUpdate(ctx) {
       if (!filter(ctx.file)) {
         return
@@ -188,6 +190,7 @@ export default function vuePlugin(rawOptions: Options = {}): Plugin {
       }
     },
 
+    // 解析代码
     transform(code, id, opt) {
       const ssr = isSSR(opt)
       const { filename, query } = parseVueRequest(id)

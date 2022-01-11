@@ -183,6 +183,7 @@ async function getCertificate(cacheDir?: string) {
   }
 }
 
+// 开启http服务
 export async function httpServerStart(
   httpServer: HttpServer,
   serverOptions: {
@@ -197,6 +198,7 @@ export async function httpServerStart(
 
     const onError = (e: Error & { code?: string }) => {
       if (e.code === 'EADDRINUSE') {
+        // 端口在使用
         if (strictPort) {
           httpServer.removeListener('error', onError)
           reject(new Error(`Port ${port} is already in use`))

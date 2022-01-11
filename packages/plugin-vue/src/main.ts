@@ -19,6 +19,7 @@ import { transformWithEsbuild } from 'vite'
 import { EXPORT_HELPER_ID } from './helper'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// 预编译vue文件核心代码
 export async function transformMain(
   code: string,
   filename: string,
@@ -45,6 +46,7 @@ export async function transformMain(
   const hasScoped = descriptor.styles.some((s) => s.scoped)
 
   // script
+  // 解析<script></script>
   const { code: scriptCode, map } = await genScriptCode(
     descriptor,
     options,
@@ -53,6 +55,7 @@ export async function transformMain(
   )
 
   // template
+  // 解析<template></template>
   const hasTemplateImport =
     descriptor.template && !isUseInlineTemplate(descriptor, !devServer)
 
@@ -83,6 +86,7 @@ export async function transformMain(
   }
 
   // styles
+  // 解析<styles></styles>
   const stylesCode = await genStyleCode(
     descriptor,
     pluginContext,

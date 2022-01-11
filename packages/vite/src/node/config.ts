@@ -279,6 +279,7 @@ export async function resolveConfig(
 ): Promise<ResolvedConfig> {
   let config = inlineConfig
   let configFileDependencies: string[] = []
+  // 模式
   let mode = inlineConfig.mode || defaultMode
 
   // some dependencies e.g. @vue/compiler-* relies on NODE_ENV for getting
@@ -352,6 +353,7 @@ export async function resolveConfig(
   }
 
   // resolve root
+  // 解析root  默认为执行命令路径
   const resolvedRoot = normalizePath(
     config.root ? path.resolve(config.root) : process.cwd()
   )

@@ -19,6 +19,7 @@ export interface WebSocketServer {
   close(): Promise<void>
 }
 
+// 创建web socket服务
 export function createWebSocketServer(
   server: Server | null,
   config: ResolvedConfig,
@@ -41,6 +42,7 @@ export function createWebSocketServer(
     })
   } else {
     const websocketServerOptions: ServerOptions = {}
+    // 获取端口
     const port = (hmr && hmr.port) || 24678
     if (httpsOptions) {
       // if we're serving the middlewares over https, the ws library doesn't support automatically creating an https server, so we need to do it ourselves
@@ -68,9 +70,11 @@ export function createWebSocketServer(
     }
 
     // vite dev server in middleware mode
+    // 奖励websocket
     wss = new WebSocket(websocketServerOptions)
   }
 
+  // 监听连接
   wss.on('connection', (socket) => {
     socket.send(JSON.stringify({ type: 'connected' }))
     if (bufferedError) {
@@ -95,8 +99,11 @@ export function createWebSocketServer(
   let bufferedError: ErrorPayload | null = null
 
   return {
+    // 监听
     on: wss.on.bind(wss),
+    // 取消监听
     off: wss.off.bind(wss),
+    // 发送
     send(payload: HMRPayload) {
       if (payload.type === 'error' && !wss.clients.size) {
         bufferedError = payload
@@ -106,12 +113,14 @@ export function createWebSocketServer(
       const stringified = JSON.stringify(payload)
       wss.clients.forEach((client) => {
         // readyState 1 means the connection is open
+        // readyState = 1 意味着连接开启
         if (client.readyState === 1) {
           client.send(stringified)
         }
       })
     },
 
+    // 关闭
     close() {
       return new Promise((resolve, reject) => {
         wss.clients.forEach((client) => {
